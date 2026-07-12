@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Табло замовлень</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Poppins:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#08090a;
+    --charcoal:#141517;
+    --gold:#ffc72c;
+    --gold-2:#ffe08a;
+    --red:#da291c;
+    --green:#22c55e;
+    --white:#f5f5f3;
+    --grey:#8d8d92;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    font-family:'Montserrat',sans-serif;
+    background:
+      radial-gradient(circle at 20% -10%, #241e12 0%, transparent 45%),
+      radial-gradient(circle at 90% 110%, #1c1010 0%, transparent 45%),
+      linear-gradient(180deg,#08090a, #101012 60%, #08090a);
+    color:var(--white);
+    min-height:100%;
+    overflow:hidden;
+  }
+  .board{
+    display:flex;flex-direction:column;height:100vh;
+  }
+  header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:26px 46px;
+    border-bottom:2px solid rgba(255,199,44,.25);
+    background:rgba(0,0,0,.3);
+  }
+  .brand{display:flex;align-items:center;gap:16px;}
+  .arches{
+    width:56px;height:56px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, var(--gold-2), var(--gold) 60%, #d99a00 100%);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Poppins';font-weight:900;color:#3a2600;font-size:28px;
+    box-shadow:0 0 30px rgba(255,199,44,.55);
+  }
+  .brand-title{font-family:'Poppins';font-weight:800;font-size:26px;letter-spacing:.5px;}
+  .brand-title span{color:var(--gold);}
+  .brand-sub{color:var(--grey);font-size:13px;letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
+  .clockbox{text-align:right;}
+  .clockbox .time{font-family:'Poppins';font-weight:800;font-size:34px;letter-spacing:1px;}
+  .clockbox .date{color:var(--grey);font-size:13px;text-transform:capitalize;}
+
+  .columns{
+    flex:1;display:grid;grid-template-columns:1fr 1fr;overflow:hidden;
+  }
+  .col{
+    display:flex;flex-direction:column;padding:34px 40px;overflow:hidden;
+  }
+  .col-prep{border-right:1px solid rgba(255,255,255,.08);}
+  .col-head{
+    display:flex;align-items:center;gap:14px;margin-bottom:26px;
+  }
+  .dot{width:16px;height:16px;border-radius:50%;}
+  .dot.amber{background:var(--gold);box-shadow:0 0 16px rgba(255,199,44,.8);}
+  .dot.green{background:var(--green);box-shadow:0 0 16px rgba(34,197,94,.8);}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+  .col-head h2{
+    font-family:'Poppins';font-weight:800;font-size:26px;letter-spacing:.5px;text-transform:uppercase;
+  }
+  .col-head .count{
+    margin-left:auto;font-family:'Poppins';font-weight:800;font-size:20px;
+    background:rgba(255,255,255,.06);padding:6px 18px;border-radius:30px;
+    border:1px solid rgba(255,255,255,.1);
+  }
+
+  .num-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+    gap:18px;overflow-y:auto;padding-right:6px;align-content:start;
+  }
+  .num-card{
+    position:relative;
+    border-radius:18px;padding:20px 10px;text-align:center;
+    font-family:'Poppins';
+    animation:pop .4s ease both;
+    display:flex;flex-direction:column;gap:6px;align-items:center;
+  }
+  @keyframes pop{from{opacity:0;transform:scale(.8);}to{opacity:1;transform:scale(1);}}
+
+  .num-card.prep{
+    background:linear-gradient(160deg,#241d10,#171310);
+    border:1px solid rgba(255,199,44,.35);
+    box-shadow:0 10px 24px rgba(255,199,44,.08);
+  }
+  .num-card.ready{
+    background:linear-gradient(160deg,#0e2418,#0d1712);
+    border:1px solid rgba(34,197,94,.4);
+    box-shadow:0 0 24px rgba(34,197,94,.3);
+  }
+  .num-card .n{font-weight:900;font-size:38px;}
+  .num-card.prep .n{color:var(--gold-2);}
+  .num-card.ready .n{color:#7CFFB2;}
+  .num-card .t{font-size:11px;color:var(--grey);font-weight:600;letter-spacing:.5px;}
+
+  .empty-msg{
+    color:var(--grey);font-family:'Poppins';font-weight:600;font-size:15px;
+    padding:40px 0;text-align:center;
+  }
+
+  .footer-strip{
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    padding:14px;border-top:1px solid rgba(255,255,255,.06);
+    color:var(--grey);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;
+    background:rgba(0,0,0,.35);
+  }
+  .footer-strip .sync-dot{width:8px;height:8px;border-radius:50%;background:#2ecf71;box-shadow:0 0 8px #2ecf71;animation:pulse 1.6s infinite;}
+
+  ::-webkit-scrollbar{width:8px;}
+  ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:10px;}
+</style>
+</head>
+<body>
+<div class="board">
+  <header>
+    <div class="brand">
+      <div class="arches">С</div>
+      <div>
+        <div class="brand-title">СМАЧНО · ТАБЛО</div>
+        <div class="brand-sub">Слідкуйте за вашим номером замовлення</div>
+      </div>
+    </div>
+    <div class="clockbox">
+      <div class="time" id="time">--:--:--</div>
+      <div class="date" id="date">—</div>
+    </div>
+  </header>
+
+  <div class="columns">
+    <section class="col col-prep">
+      <div class="col-head">
+        <span class="dot amber"></span>
+        <h2>Готується</h2>
+        <span class="count" id="prepCount">0</span>
+      </div>
+      <div class="num-grid" id="prepGrid"></div>
+    </section>
+    <section class="col col-ready">
+      <div class="col-head">
+        <span class="dot green"></span>
+        <h2>Готово до видачі</h2>
+        <span class="count" id="readyCount">0</span>
+      </div>
+      <div class="num-grid" id="readyGrid"></div>
+    </section>
+  </div>
+
+  <div class="footer-strip">
+    <span class="sync-dot"></span>
+    <span id="syncLabel">Оновлення кожні 10 секунд</span>
+  </div>
+</div>
+
+<script>
+/* Same shared "file" (localStorage) used by menu.html and orders.html.
+   This board is READ + light WRITE (auto-promotes old "preparing"
+   orders to "ready" after a short simulated prep time so the demo
+   feels alive), polled every 10 seconds like a real kitchen display. */
+const DB_KEY = "mcd_shared_orders_db";
+const POLL_MS = 10000;
+const PREP_TIME_MS = 25000; // demo: auto "cooked" after 25s so the board isn't static
+
+function loadDB(){
+  try{
+    const raw = localStorage.getItem(DB_KEY);
+    if(!raw) return { nextNumber: 101, orders: [] };
+    return JSON.parse(raw);
+  }catch(e){ return { nextNumber: 101, orders: [] }; }
+}
+function saveDB(db){ localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+
+function autoPromote(db){
+  const now = Date.now();
+  let changed = false;
+  db.orders.forEach(o=>{
+    if(o.status==="preparing" && (now - new Date(o.time).getTime()) > PREP_TIME_MS){
+      o.status = "ready";
+      changed = true;
+    }
+  });
+  if(changed) saveDB(db);
+  return db;
+}
+
+function render(){
+  let db = loadDB();
+  db = autoPromote(db);
+
+  const preparing = db.orders.filter(o=>o.status==="preparing");
+  const ready = db.orders.filter(o=>o.status==="ready");
+
+  document.getElementById("prepCount").textContent = preparing.length;
+  document.getElementById("readyCount").textContent = ready.length;
+
+  const prepGrid = document.getElementById("prepGrid");
+  const readyGrid = document.getElementById("readyGrid");
+
+  prepGrid.innerHTML = preparing.length
+    ? preparing.map(o=>`
+        <div class="num-card prep">
+          <div class="n">${o.number}</div>
+          <div class="t">${timeAgo(o.time)}</div>
+        </div>`).join("")
+    : `<div class="empty-msg">Немає замовлень у приготуванні</div>`;
+
+  readyGrid.innerHTML = ready.length
+    ? ready.map(o=>`
+        <div class="num-card ready">
+          <div class="n">${o.number}</div>
+          <div class="t">Заберіть замовлення</div>
+        </div>`).join("")
+    : `<div class="empty-msg">Немає готових замовлень</div>`;
+
+  document.getElementById("syncLabel").textContent =
+    "Оновлено о " + new Date().toLocaleTimeString("uk-UA");
+}
+
+function timeAgo(iso){
+  const sec = Math.max(0, Math.floor((Date.now()-new Date(iso).getTime())/1000));
+  if(sec<60) return sec+" с тому";
+  return Math.floor(sec/60)+" хв тому";
+}
+
+function tickClock(){
+  const now = new Date();
+  document.getElementById("time").textContent = now.toLocaleTimeString("uk-UA");
+  document.getElementById("date").textContent = now.toLocaleDateString("uk-UA", {weekday:"long", day:"numeric", month:"long"});
+}
+setInterval(tickClock,1000); tickClock();
+
+setInterval(render, POLL_MS);
+setInterval(render, 1000); // smooth countdown / auto-promote feel, still reads the same shared store
+window.addEventListener("storage", (e)=>{ if(e.key===DB_KEY) render(); });
+
+render();
+</script>
+</body>
+</html>
