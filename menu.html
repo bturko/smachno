@@ -452,16 +452,16 @@ const COUNTER_REF = () => db.collection("meta").doc("counter");
 
 /* ---------------- PRODUCT CATALOG ---------------- */
 const PRODUCTS = [
-  {id:"hamburger", cat:"burgers", name:"Гамбургер", desc:"Класична яловича котлета, маринований огірок, цибуля, гірчиця та кетчуп.", price:59, img:"https://images.unsplash.com/photo-1571091718767-18b5b1457add?auto=format&fit=crop&w=800&q=80"},
-  {id:"cheeseburger", cat:"burgers", name:"Чізбургер", desc:"Соковита яловича котлета, скибочка сиру чеддер, огірок та фірмовий соус.", price:69, img:"https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=800&q=80", badge:"hit", badgeText:"ХІТ"},
-  {id:"farmer", cat:"burgers", name:"Фермерський Бургер", desc:"Хрустка курча-котлета в паніровці, свіжий салат, томати та вершковий соус.", price:99, img:"https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=800&q=80", badge:"new", badgeText:"НОВИНКА"},
+  {id:"hamburger", cat:"burgers", name:"Гамбургер", desc:"Класична яловича котлета, маринований огірок, цибуля, гірчиця та кетчуп.", price:59, img:"images/hamburger.png"},
+  {id:"cheeseburger", cat:"burgers", name:"Чізбургер", desc:"Соковита яловича котлета, скибочка сиру чеддер, огірок та фірмовий соус.", price:69, img:"images/cheeseburger.png", badge:"hit", badgeText:"ХІТ"},
+  {id:"farmer", cat:"burgers", name:"Фермерський Бургер", desc:"Хрустка курча-котлета в паніровці, свіжий салат, томати та вершковий соус.", price:99, img:"images/farmer.jpg", badge:"new", badgeText:"НОВИНКА"},
 
-  {id:"fries_s", cat:"sides", name:"Картопля Фрі Маленька", desc:"Хрустка золотиста картопля фрі, посипана морською сіллю.", price:39, img:"https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=800&q=80", sauce:true},
-  {id:"fries_m", cat:"sides", name:"Картопля Фрі Середня", desc:"Ідеальна порція хрусткої картоплі фрі до будь-якої страви.", price:55, img:"https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=800&q=80", badge:"hit", badgeText:"ХІТ", sauce:true},
-  {id:"fries_l", cat:"sides", name:"Картопля Фрі Велика", desc:"Велика порція для справжніх поціновувачів хрусткої картоплі.", price:69, img:"https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=800&q=80", sauce:true},
+  {id:"fries_s", cat:"sides", name:"Картопля Фрі Маленька", desc:"Хрустка золотиста картопля фрі, посипана морською сіллю.", price:39, img:"images/fries_sml.jpg", sauce:true},
+  {id:"fries_m", cat:"sides", name:"Картопля Фрі Середня", desc:"Ідеальна порція хрусткої картоплі фрі до будь-якої страви.", price:55, img:"images/fries_med.jpg", badge:"hit", badgeText:"ХІТ", sauce:true},
+  {id:"fries_l", cat:"sides", name:"Картопля Фрі Велика", desc:"Велика порція для справжніх поціновувачів хрусткої картоплі.", price:69, img:"images/fries_big.jpg", sauce:true},
 
   {id:"cola", cat:"drinks", name:"Кока-Кола", desc:"Класичний освіжаючий смак улюбленого напою з льодом.", price:39, img:"https://images.unsplash.com/photo-1554866585-cd94860890b7?auto=format&fit=crop&w=800&q=80"},
-  {id:"sprite", cat:"drinks", name:"Спрайт", desc:"Освіжаючий лимонно-лаймовий смак без зайвої солодкості.", price:39, img:"https://images.unsplash.com/photo-1622758665277-05e973af4395?auto=format&fit=crop&w=800&q=80"},
+  {id:"sprite", cat:"drinks", name:"Спрайт", desc:"Освіжаючий лимонно-лаймовий смак без зайвої солодкості.", price:39, img:"images/sprite.jpg"},
   {id:"fanta", cat:"drinks", name:"Фанта Апельсин", desc:"Яскравий смак стиглих апельсинів у кожному ковтку.", price:39, img:"https://images.unsplash.com/photo-1624517452488-04869289c4ca?auto=format&fit=crop&w=800&q=80"},
 
   {id:"icecream_vanilla", cat:"desserts", name:"Морозиво Ванільне", desc:"Ніжне вершкове морозиво класичного ванільного смаку.", price:35, img:"https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?auto=format&fit=crop&w=800&q=80", badge:"hit", badgeText:"ХІТ"},
