@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Табло замовлень</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Poppins:wght@700;800;900&display=swap" rel="stylesheet">
+<!-- Firebase (compat build — works with plain <script> tags, no bundler needed) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<style>
+  :root{
+    --black:#08090a;
+    --charcoal:#141517;
+    --gold:#ffc72c;
+    --gold-2:#ffe08a;
+    --red:#da291c;
+    --green:#22c55e;
+    --white:#f5f5f3;
+    --grey:#8d8d92;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    font-family:'Montserrat',sans-serif;
+    background:
+      radial-gradient(circle at 20% -10%, #241e12 0%, transparent 45%),
+      radial-gradient(circle at 90% 110%, #1c1010 0%, transparent 45%),
+      linear-gradient(180deg,#08090a, #101012 60%, #08090a);
+    color:var(--white);
+    min-height:100%;
+    overflow:hidden;
+  }
+  .board{
+    display:flex;flex-direction:column;height:100vh;
+  }
+  header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:26px 46px;
+    border-bottom:2px solid rgba(255,199,44,.25);
+    background:rgba(0,0,0,.3);
+  }
+  .brand{display:flex;align-items:center;gap:16px;}
+  .arches{
+    width:56px;height:56px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, var(--gold-2), var(--gold) 60%, #d99a00 100%);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Poppins';font-weight:900;color:#3a2600;font-size:28px;
+    box-shadow:0 0 30px rgba(255,199,44,.55);
+  }
+  .brand-title{font-family:'Poppins';font-weight:800;font-size:26px;letter-spacing:.5px;}
+  .brand-title span{color:var(--gold);}
+  .brand-sub{color:var(--grey);font-size:13px;letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
+  .clockbox{text-align:right;}
+  .clockbox .time{font-family:'Poppins';font-weight:800;font-size:34px;letter-spacing:1px;}
+  .clockbox .date{color:var(--grey);font-size:13px;text-transform:capitalize;}
+
+  .columns{
+    flex:1;display:grid;grid-template-columns:1fr 1fr;overflow:hidden;
+  }
+  .col{
+    display:flex;flex-direction:column;padding:34px 40px;overflow:hidden;
+  }
+  .col-prep{border-right:1px solid rgba(255,255,255,.08);}
+  .col-head{
+    display:flex;align-items:center;gap:14px;margin-bottom:26px;
+  }
+  .dot{width:16px;height:16px;border-radius:50%;}
+  .dot.amber{background:var(--gold);box-shadow:0 0 16px rgba(255,199,44,.8);}
+  .dot.green{background:var(--green);box-shadow:0 0 16px rgba(34,197,94,.8);}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+  .col-head h2{
+    font-family:'Poppins';font-weight:800;font-size:26px;letter-spacing:.5px;text-transform:uppercase;
+  }
+  .col-head .count{
+    margin-left:auto;font-family:'Poppins';font-weight:800;font-size:20px;
+    background:rgba(255,255,255,.06);padding:6px 18px;border-radius:30px;
+    border:1px solid rgba(255,255,255,.1);
+  }
+
+  .num-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+    gap:18px;overflow-y:auto;padding-right:6px;align-content:start;
+  }
+  .num-card{
+    position:relative;
+    border-radius:18px;padding:20px 10px;text-align:center;
+    font-family:'Poppins';
+    animation:pop .4s ease both;
+    display:flex;flex-direction:column;gap:6px;align-items:center;
+  }
+  @keyframes pop{from{opacity:0;transform:scale(.8);}to{opacity:1;transform:scale(1);}}
+
+  .num-card.prep{
+    background:linear-gradient(160deg,#241d10,#171310);
+    border:1px solid rgba(255,199,44,.35);
+    box-shadow:0 10px 24px rgba(255,199,44,.08);
+  }
+  .num-card.ready{
+    background:linear-gradient(160deg,#0e2418,#0d1712);
+    border:1px solid rgba(34,197,94,.4);
+    box-shadow:0 0 24px rgba(34,197,94,.3);
+  }
+  .num-card .n{font-weight:900;font-size:38px;}
+  .num-card.prep .n{color:var(--gold-2);}
+  .num-card.ready .n{color:#7CFFB2;}
+  .num-card .t{font-size:11px;color:var(--grey);font-weight:600;letter-spacing:.5px;}
+
+  .empty-msg{
+    color:var(--grey);font-family:'Poppins';font-weight:600;font-size:15px;
+    padding:40px 0;text-align:center;
+  }
+
+  .footer-strip{
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    padding:14px;border-top:1px solid rgba(255,255,255,.06);
+    color:var(--grey);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;
+    background:rgba(0,0,0,.35);
+  }
+  .footer-strip .sync-dot{width:8px;height:8px;border-radius:50%;background:#2ecf71;box-shadow:0 0 8px #2ecf71;animation:pulse 1.6s infinite;}
+
+  ::-webkit-scrollbar{width:8px;}
+  ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:10px;}
+</style>
+</head>
+<body>
+<div class="board">
+  <header>
+    <div class="brand">
+      <div class="arches">С</div>
+      <div>
+        <div class="brand-title">СМАЧНО · ТАБЛО</div>
+        <div class="brand-sub">Слідкуйте за вашим номером замовлення</div>
+      </div>
+    </div>
+    <div class="clockbox">
+      <div class="time" id="time">--:--:--</div>
+      <div class="date" id="date">—</div>
+    </div>
+  </header>
+
+  <div class="columns">
+    <section class="col col-prep">
+      <div class="col-head">
+        <span class="dot amber"></span>
+        <h2>Готується</h2>
+        <span class="count" id="prepCount">0</span>
+      </div>
+      <div class="num-grid" id="prepGrid"></div>
+    </section>
+    <section class="col col-ready">
+      <div class="col-head">
+        <span class="dot green"></span>
+        <h2>Готово до видачі</h2>
+        <span class="count" id="readyCount">0</span>
+      </div>
+      <div class="num-grid" id="readyGrid"></div>
+    </section>
+  </div>
+
+  <div class="footer-strip">
+    <span class="sync-dot"></span>
+    <span id="syncLabel">Оновлення кожні 10 секунд</span>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   DATA LAYER — Firebase Firestore, realtime, READ-ONLY.
+   This board NEVER changes an order's status itself. It only
+   displays whatever status orders.html has set. An order only
+   moves from "Готується" to "Готово до видачі" when a staff
+   member explicitly clicks "Готово" on orders.html — there is
+   no auto-promote timer here anymore.
+
+   >>> REPLACE THIS WITH YOUR OWN PROJECT CONFIG <<<
+   Use the SAME config as menu.html / orders.html.
+   ========================================================= */
+const firebaseConfig = {
+  apiKey: "AIzaSyBCvdphRK58XZgNjYLMSURPAbmaPx6BC2o",
+  authDomain: "mcdonalds-43d8f.firebaseapp.com",
+  projectId: "mcdonalds-43d8f",
+  storageBucket: "mcdonalds-43d8f.firebasestorage.app",
+  messagingSenderId: "282247292100",
+  appId: "1:282247292100:web:91001cad27ff87380c5591",
+  measurementId: "G-H5JDK9HLCX"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const ORDERS_COL = "orders";
+
+function orderTimeMs(o){
+  if(o.time && typeof o.time.toDate === "function") return o.time.toDate().getTime();
+  return o.clientTime || Date.now();
+}
+
+function render(orders){
+  const preparing = orders.filter(o=>o.status==="preparing");
+  const ready = orders.filter(o=>o.status==="ready");
+
+  document.getElementById("prepCount").textContent = preparing.length;
+  document.getElementById("readyCount").textContent = ready.length;
+
+  const prepGrid = document.getElementById("prepGrid");
+  const readyGrid = document.getElementById("readyGrid");
+
+  prepGrid.innerHTML = preparing.length
+    ? preparing.map(o=>`
+        <div class="num-card prep">
+          <div class="n">${o.number}</div>
+          <div class="t">${timeAgo(orderTimeMs(o))}</div>
+        </div>`).join("")
+    : `<div class="empty-msg">Немає замовлень у приготуванні</div>`;
+
+  readyGrid.innerHTML = ready.length
+    ? ready.map(o=>`
+        <div class="num-card ready">
+          <div class="n">${o.number}</div>
+          <div class="t">Заберіть замовлення</div>
+        </div>`).join("")
+    : `<div class="empty-msg">Немає готових замовлень</div>`;
+}
+
+function timeAgo(ms){
+  const sec = Math.max(0, Math.floor((Date.now()-ms)/1000));
+  if(sec<60) return sec+" с тому";
+  return Math.floor(sec/60)+" хв тому";
+}
+
+function tickClock(){
+  const now = new Date();
+  document.getElementById("time").textContent = now.toLocaleTimeString("uk-UA");
+  document.getElementById("date").textContent = now.toLocaleDateString("uk-UA", {weekday:"long", day:"numeric", month:"long"});
+}
+setInterval(tickClock,1000); tickClock();
+
+// Refresh the "X с тому" labels every second without re-querying Firestore.
+let latestOrders = [];
+setInterval(()=>render(latestOrders), 1000);
+
+function setSyncLabel(connected){
+  document.getElementById("syncLabel").textContent = connected
+    ? "Оновлено о " + new Date().toLocaleTimeString("uk-UA")
+    : "Немає з'єднання";
+}
+
+// Realtime, read-only. Only shows preparing/ready orders — never
+// touches their status, and never auto-completes anything.
+db.collection(ORDERS_COL)
+  .where("status", "in", ["preparing", "ready"])
+  .onSnapshot(snapshot=>{
+    latestOrders = snapshot.docs.map(d=>({ id:d.id, ...d.data() }));
+    render(latestOrders);
+    setSyncLabel(true);
+  }, err=>{
+    console.error("Firestore listener error:", err);
+    setSyncLabel(false);
+  });
+</script>
+</body>
+</html>
