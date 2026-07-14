@@ -373,9 +373,9 @@
     </div>
   </div>
   <div class="hero-visual">
-    <img src="https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=1200&q=80" alt="Фермерський бургер">
+    <img src="images/hamburger.png" alt="Гамбургер" styles="background:white;">
     <div class="ribbon">НОВИНКА</div>
-    <div class="price-badge">99 ₴</div>
+    <div class="price-badge">59 ₴</div>
   </div>
 </section>
 
@@ -451,21 +451,21 @@ const ORDERS_COL = "orders";
 const COUNTER_REF = () => db.collection("meta").doc("counter");
 
 /* ---------------- PRODUCT CATALOG ---------------- */
-const PRODUCTS = [
+const PRODUCTS = [ //, badge:"hit", badgeText:"ХІТ"
   {id:"hamburger", cat:"burgers", name:"Гамбургер", desc:"Класична яловича котлета, маринований огірок, цибуля, гірчиця та кетчуп.", price:59, img:"images/hamburger.png"},
-  {id:"cheeseburger", cat:"burgers", name:"Чізбургер", desc:"Соковита яловича котлета, скибочка сиру чеддер, огірок та фірмовий соус.", price:69, img:"images/cheeseburger.png", badge:"hit", badgeText:"ХІТ"},
-  {id:"farmer", cat:"burgers", name:"Фермерський Бургер", desc:"Хрустка курча-котлета в паніровці, свіжий салат, томати та вершковий соус.", price:99, img:"images/farmer.jpg", badge:"new", badgeText:"НОВИНКА"},
+  {id:"cheeseburger", cat:"burgers", name:"Чізбургер", desc:"Соковита яловича котлета, скибочка сиру чеддер, огірок та фірмовий соус.", price:69, img:"images/cheeseburger.png"},
+  {id:"farmer", cat:"burgers", name:"Фермерський Бургер", desc:"Хрустка курча-котлета в паніровці, свіжий салат, томати та вершковий соус.", price:99, img:"images/farm.jpg"},
 
   {id:"fries_s", cat:"sides", name:"Картопля Фрі Маленька", desc:"Хрустка золотиста картопля фрі, посипана морською сіллю.", price:39, img:"images/fries_sml.jpg", sauce:true},
-  {id:"fries_m", cat:"sides", name:"Картопля Фрі Середня", desc:"Ідеальна порція хрусткої картоплі фрі до будь-якої страви.", price:55, img:"images/fries_med.jpg", badge:"hit", badgeText:"ХІТ", sauce:true},
+  {id:"fries_m", cat:"sides", name:"Картопля Фрі Середня", desc:"Ідеальна порція хрусткої картоплі фрі до будь-якої страви.", price:55, img:"images/fries_med.jpg",  sauce:true},
   {id:"fries_l", cat:"sides", name:"Картопля Фрі Велика", desc:"Велика порція для справжніх поціновувачів хрусткої картоплі.", price:69, img:"images/fries_big.jpg", sauce:true},
 
   {id:"cola", cat:"drinks", name:"Кока-Кола", desc:"Класичний освіжаючий смак улюбленого напою з льодом.", price:39, img:"https://images.unsplash.com/photo-1554866585-cd94860890b7?auto=format&fit=crop&w=800&q=80"},
   {id:"sprite", cat:"drinks", name:"Спрайт", desc:"Освіжаючий лимонно-лаймовий смак без зайвої солодкості.", price:39, img:"images/sprite.jpg"},
   {id:"fanta", cat:"drinks", name:"Фанта Апельсин", desc:"Яскравий смак стиглих апельсинів у кожному ковтку.", price:39, img:"https://images.unsplash.com/photo-1624517452488-04869289c4ca?auto=format&fit=crop&w=800&q=80"},
 
-  {id:"icecream_vanilla", cat:"desserts", name:"Морозиво Ванільне", desc:"Ніжне вершкове морозиво класичного ванільного смаку.", price:35, img:"https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?auto=format&fit=crop&w=800&q=80", badge:"hit", badgeText:"ХІТ"},
-  {id:"icecream_pistachio", cat:"desserts", name:"Морозиво Фісташкове", desc:"Кремове морозиво з насиченим смаком справжньої фісташки.", price:45, img:"https://images.unsplash.com/photo-1554630981-a73ffb5ed6f8?auto=format&fit=crop&w=800&q=80", badge:"new", badgeText:"НОВИНКА"},
+  {id:"icecream_vanilla", cat:"desserts", name:"Морозиво Ванільне", desc:"Ніжне вершкове морозиво класичного ванільного смаку.", price:35, img:"https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?auto=format&fit=crop&w=800&q=80"}, //, badge:"hit", badgeText:"ХІТ"
+  {id:"icecream_pistachio", cat:"desserts", name:"Морозиво Фісташкове", desc:"Кремове морозиво з насиченим смаком справжньої фісташки.", price:45, img:"https://images.unsplash.com/photo-1554630981-a73ffb5ed6f8?auto=format&fit=crop&w=800&q=80"}, //, badge:"new", badgeText:"НОВИНКА"
   {id:"muffin", cat:"desserts", name:"Маффін", desc:"Пухнастий маффін з ніжною начинкою — ідеально до кави.", price:49, img:"https://images.unsplash.com/photo-1722251172903-cc8774501df7?auto=format&fit=crop&w=800&q=80"},
 
   /* Sauces are quick-add extras attached to fries cards (not their own section) */
@@ -520,7 +520,7 @@ function cardHTML(p, i){
   return `
     <div class="card" style="animation-delay:${(i%8)*0.05}s">
       <div class="card-img">
-        <img src="${p.img}" alt="${p.name}" loading="lazy">
+        <img src="${p.img}" alt="${p.name}" loading="lazy" style="background:white;">
         ${badge}
       </div>
       <div class="card-body">
